@@ -1,0 +1,20 @@
+plugins {
+	id 'java'
+	id 'ru.itbasis.gradle.plugins.postgresql-embedded-plugin'
+}
+repositories {
+	jcenter()
+}
+import ru.yandex.qatools.embed.postgresql.distribution.Version
+embeddedPostgreSQL{
+	version = Version.Main.V9_5
+}
+dependencies {
+	compile 'org.postgresql:postgresql:latest.release'
+
+	testCompile 'junit:junit:latest.release'
+}
+
+test.testLogging.showStandardStreams = true
+test.dependsOn 'postgresqlServerStart'
+test.finalizedBy 'postgresqlServerStop'

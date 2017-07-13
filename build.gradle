@@ -1,0 +1,90 @@
+buildscript {
+	repositories {
+		maven { url 'https://plugins.gradle.org/m2/' }
+	}
+}
+
+plugins {
+	id 'groovy'
+	id 'idea'
+	id 'java-gradle-plugin'
+	id 'com.gradle.plugin-publish' version '0.9.7'
+	id 'maven-publish'
+}
+
+repositories {
+	jcenter()
+}
+
+configurations.all {
+	resolutionStrategy.failOnVersionConflict()
+}
+
+dependencies {
+	compile gradleApi()
+	compile 'ru.yandex.qatools.embed:postgresql-embedded:+'
+
+	testCompile gradleTestKit()
+	testCompile 'junit:junit:latest.release'
+}
+
+ext {
+	javaVersion = JavaVersion.VERSION_1_8
+}
+
+sourceCompatibility = javaVersion
+targetCompatibility = javaVersion
+
+test {
+	testLogging.showStandardStreams = true
+}
+
+publishPlugins.dependsOn check
+publish.dependsOn check
+publishToMavenLocal.dependsOn check
+
+idea {
+	project {
+		languageLevel = javaVersion
+	}
+	module {
+		downloadJavadoc = false
+		downloadSources = false
+		inheritOutputDirs = false
+		outputDir = file("$buildDir/classes/main/")
+	}
+}
+
+artifacts {
+	archives jar
+}
+
+publishing {
+	publications {
+		mavenJava(MavenPublication) {
+			from components.java
+		}
+	}
+}
+
+pluginBundle {
+	website = project.url
+	vcsUrl = project.url + '.git'
+
+	description = project.description
+
+	mavenCoordinates {
+		groupId = project.group
+		artifactId = project.name
+		version = project.version
+	}
+
+	plugins {
+		javaModulePlugin {
+			id = project.group + '.' + project.name
+			displayName = project.description
+			tags = ['java', 'postgresql', 'qatools']
+			version = project.version
+		}
+	}
+}

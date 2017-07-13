@@ -1,0 +1,8 @@
+# Created by .ignore support plugin (hsz.mobi)
+
+.gradle/
+build/
+
+.idea/*
+!.idea/vcs.xml
+!.idea/runConfigurations/
