@@ -18,14 +18,17 @@ After the server is started, environment variables are added to all dependent ta
 
 ## Extension properties
 
+[source](src/main/groovy/ru/itbasis/gradle/plugins/postgresql/PostgresqlExtension.groovy)
+
 |parameter|default value|
 |---|---|
-|version|[PRODUCTION](https://github.com/yandex-qatools/postgresql-embedded/blob/master/src/main/java/ru/yandex/qatools/embed/postgresql/distribution/Version.java)
-|host|[localhost](https://github.com/yandex-qatools/postgresql-embedded/blob/master/src/main/java/ru/yandex/qatools/embed/postgresql/EmbeddedPostgres.java)
+|version|PRODUCTION
+|host|localhost
 |port|0 _(find free port)_|
-|dbName|[postgres](https://github.com/yandex-qatools/postgresql-embedded/blob/master/src/main/java/ru/yandex/qatools/embed/postgresql/EmbeddedPostgres.java)
-|user|[postgres](https://github.com/yandex-qatools/postgresql-embedded/blob/master/src/main/java/ru/yandex/qatools/embed/postgresql/EmbeddedPostgres.java)
-|password|[postgres](https://github.com/yandex-qatools/postgresql-embedded/blob/master/src/main/java/ru/yandex/qatools/embed/postgresql/EmbeddedPostgres.java)
+|dbName|postgres
+|user|postgres
+|password|postgres
+|addParams|_(empty list)_
 
 
 ## Examples
