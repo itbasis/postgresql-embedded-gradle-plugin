@@ -35,7 +35,7 @@ apply plugin: https://plugins.gradle.org/plugin/ru.itbasis.gradle.plugins.postgr
 
 ## Examples
 
-* depends tasks and default PostgreSql server version: [minimal](src/test/resources/version-default.gradle), [full](src/test/resources/version-default-full.gradle)
+* depends tasks and default PostgreSql server version: [minimal](src/test/resources/version-default.gradle)
 * custom PostgreSql server version: [9.5](src/test/resources/version-9.5.gradle), [9.6](src/test/resources/version-9.6.gradle)
 
 
