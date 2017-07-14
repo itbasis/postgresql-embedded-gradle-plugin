@@ -1,4 +1,6 @@
 # PostgreSQL Embedded Server Gradle plugin
+[![Build status](https://travis-ci.org/BorzdeG/ru.itbasis.gradle.plugins.postgresql-embedded-plugin.svg?branch=master)](https://travis-ci.org/BorzdeG/ru.itbasis.gradle.plugins.postgresql-embedded-plugin)
+
 
 A plugin that adds the ability to start/stop [Embedded PostgreSQL Server](https://github.com/yandex-qatools/postgresql-embedded) while executing Gradle tasks.
 After the server is started, environment variables are added to all dependent tasks of the [JavaForkOptions](https://docs.gradle.org/current/javadoc/org/gradle/process/JavaForkOptions.html) type with the description of the running server.

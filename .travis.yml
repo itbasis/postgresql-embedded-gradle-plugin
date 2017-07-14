@@ -1,5 +1,5 @@
 language: groovy
-script: gradlew check
+script: ./gradlew check
 matrix:
   include:
     - os: linux
