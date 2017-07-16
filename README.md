@@ -33,12 +33,15 @@ apply plugin: https://plugins.gradle.org/plugin/ru.itbasis.gradle.plugins.postgr
 |user|postgres
 |password|postgres
 |addParams|_(empty list)_
+|runtimeConfig| [_view source code_](src/main/groovy/ru/itbasis/gradle/plugins/postgresql/EnvironmentConfig.groovy) |
+|environmentNames|[_view source code_](src/main/groovy/ru/itbasis/gradle/plugins/postgresql/EnvironmentConfig.groovy)
 
 
 ## Examples
 
-* depends tasks and default PostgreSql server version: [minimal](src/test/resources/version-default.gradle)
+* depends tasks and default PostgreSql server version: [minimal](src/test/resources/minimal.gradle)
 * custom PostgreSql server version: [9.5](src/test/resources/version-9.5.gradle), [9.6](src/test/resources/version-9.6.gradle)
+* custom environment: [environment names](src/test/resources/custom-environment-names.gradle), [custom environment](src/test/resources/environment-custom-partial.gradle)
 
 
 ## TODO

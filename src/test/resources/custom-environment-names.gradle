@@ -5,15 +5,21 @@ plugins {
 repositories {
 	jcenter()
 }
-
-embeddedPostgreSQL {
-	environment['default'].version = ru.yandex.qatools.embed.postgresql.distribution.Version.Main.V9_6
-}
-
 dependencies {
 	compile 'org.postgresql:postgresql:latest.release'
 
 	testCompile 'junit:junit:latest.release'
+}
+
+embeddedPostgreSQL {
+	environment['default'].environmentNames = [
+		'host'    : 'DB_HOST',
+		'port'    : 'DB_PORT',
+		'dbName'  : 'DB_NAME',
+		'user'    : 'DB_USER',
+		'password': 'DB_PASSWORD',
+		'jdbc'    : 'DB_JDBC'
+	]
 }
 
 test.testLogging.showStandardStreams = true

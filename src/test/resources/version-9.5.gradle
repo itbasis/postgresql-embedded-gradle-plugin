@@ -5,10 +5,11 @@ plugins {
 repositories {
 	jcenter()
 }
-import ru.yandex.qatools.embed.postgresql.distribution.Version
-embeddedPostgreSQL{
-	version = Version.Main.V9_5
+
+embeddedPostgreSQL {
+	environment['default'].version = ru.yandex.qatools.embed.postgresql.distribution.Version.Main.V9_5
 }
+
 dependencies {
 	compile 'org.postgresql:postgresql:latest.release'
 

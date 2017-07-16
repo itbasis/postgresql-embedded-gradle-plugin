@@ -63,9 +63,11 @@ class PostgresqlEmbeddedPluginTest {
 		Assert.assertFalse(result.output.contains(':postgresqlServerStart'))
 	}
 
+	/** TODO https://github.com/yandex-qatools/postgresql-embedded/issues/90 */
 	@Test
-	void version_Default() throws Exception {
-		initProjectStructure('version-default', 'TestClass')
+	@Ignore
+	void minimal() throws Exception {
+		initProjectStructure('minimal', 'TestClass')
 		final result = gradleRunner.withArguments('test')
 		                           .build()
 		Assert.assertTrue(result.output.contains(Version.Main.PRODUCTION.asInDownloadPath()))
@@ -89,5 +91,23 @@ class PostgresqlEmbeddedPluginTest {
 		final result = gradleRunner.withArguments('test')
 		                           .build()
 		Assert.assertTrue(result.output.contains(Version.Main.V9_6.asInDownloadPath()))
+	}
+
+	/** TODO https://github.com/yandex-qatools/postgresql-embedded/issues/90 */
+	@Test
+	@Ignore
+	void customEnvironmentNames() throws Exception {
+		initProjectStructure('custom-environment-names', 'TestClassCustomEnvironmentNames')
+		final result = gradleRunner.withArguments('test')
+		                           .build()
+		Assert.assertTrue(result.output.contains(Version.Main.PRODUCTION.asInDownloadPath()))
+	}
+
+	@Test
+	void customEnvironmentPartial() throws Exception {
+		initProjectStructure('environment-custom-partial', 'TestClass')
+		final result = gradleRunner.withArguments('test')
+		                           .build()
+		Assert.assertTrue(result.output.contains(Version.Main.V9_5.asInDownloadPath()))
 	}
 }
