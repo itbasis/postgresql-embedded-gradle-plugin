@@ -1,5 +1,5 @@
 # PostgreSQL Embedded Server Gradle plugin
-[![Build status](https://travis-ci.org/itbasis/postgresql-embedded-gradle-plugin.svg?branch=master)](https://travis-ci.org/itbasis/postgresql-embedded-gradle-plugin)
+[![Build status](https://travis-ci.org/itbasis/postgresql-embedded-gradle-plugin.svg?branch=master)](https://travis-ci.org/itbasis/postgresql-embedded-gradle-plugin) [![Build status](https://ci.appveyor.com/api/projects/status/qw3g6ij6xs6rys5p/branch/master?svg=true)](https://ci.appveyor.com/project/BorzdeG/postgresql-embedded-gradle-plugin/branch/master)
 
 
 A plugin that adds the ability to start/stop [Embedded PostgreSQL Server](https://github.com/yandex-qatools/postgresql-embedded) while executing Gradle tasks.
