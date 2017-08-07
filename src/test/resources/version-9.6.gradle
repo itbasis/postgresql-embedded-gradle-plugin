@@ -1,6 +1,6 @@
 plugins {
 	id 'java'
-	id 'ru.itbasis.gradle.plugins.postgresql-embedded-plugin'
+	id 'ru.itbasis.gradle.plugins.postgresql-embedded-gradle-plugin'
 }
 repositories {
 	jcenter()

@@ -2,30 +2,40 @@ buildscript {
 	repositories {
 		maven { url 'https://plugins.gradle.org/m2/' }
 	}
+	dependencies {
+		classpath 'com.gradle.publish:plugin-publish-plugin:0.9.7'
+		classpath 'com.bmuschko:gradle-nexus-plugin:2.3.1'
+		classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.9.0'
+	}
 }
 
-plugins {
-	id 'groovy'
-	id 'idea'
-	id 'java-gradle-plugin'
-	id 'com.gradle.plugin-publish' version '0.9.7'
-	id 'maven-publish'
-}
+apply plugin: 'groovy'
 
 repositories {
 	jcenter()
+	mavenCentral()
 }
 
 configurations.all {
-	resolutionStrategy.failOnVersionConflict()
+	resolutionStrategy {
+		failOnVersionConflict()
+	}
+
+	resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+		if (details.requested.name == 'groovy-all') {
+			details.useVersion(GroovySystem.version)
+		}
+		if (details.requested.group == 'org.hamcrest') {
+			details.useVersion('1.3')
+		}
+	}
 }
 
 dependencies {
-	compile gradleApi()
-	compile 'ru.yandex.qatools.embed:postgresql-embedded:+'
+	compile 'ru.yandex.qatools.embed:postgresql-embedded:latest.release'
 
-	testCompile gradleTestKit()
 	testCompile 'junit:junit:latest.release'
+	testCompile 'org.hamcrest:hamcrest-library:latest.release'
 }
 
 ext {
@@ -35,56 +45,6 @@ ext {
 sourceCompatibility = javaVersion
 targetCompatibility = javaVersion
 
-test {
-	testLogging.showStandardStreams = true
-}
-
-publishPlugins.dependsOn check
-publish.dependsOn check
-publishToMavenLocal.dependsOn check
-
-idea {
-	project {
-		languageLevel = javaVersion
-	}
-	module {
-		downloadJavadoc = false
-		downloadSources = false
-		inheritOutputDirs = false
-		outputDir = file("$buildDir/classes/main/")
-	}
-}
-
-artifacts {
-	archives jar
-}
-
-publishing {
-	publications {
-		mavenJava(MavenPublication) {
-			from components.java
-		}
-	}
-}
-
-pluginBundle {
-	website = project.url
-	vcsUrl = project.url + '.git'
-
-	description = project.description
-
-	mavenCoordinates {
-		groupId = project.group
-		artifactId = project.name
-		version = project.version
-	}
-
-	plugins {
-		javaModulePlugin {
-			id = project.group + '.' + project.name
-			displayName = project.description
-			tags = ['java', 'postgresql', 'qatools']
-			version = project.version
-		}
-	}
+if (project == rootProject) {
+	apply from: 'gradle/publish.gradle'
 }

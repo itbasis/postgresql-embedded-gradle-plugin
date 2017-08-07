@@ -11,7 +11,7 @@ class PostgresqlEmbeddedPlugin implements Plugin<ProjectInternal> {
 	public static final String TASK_START = 'postgresqlServerStart'
 	public static final String TASK_STOP = 'postgresqlServerStop'
 
-	protected static EmbeddedPostgres postgresServer = null
+	public static EmbeddedPostgres postgresServer = null
 
 	@Override
 	void apply(ProjectInternal project) {

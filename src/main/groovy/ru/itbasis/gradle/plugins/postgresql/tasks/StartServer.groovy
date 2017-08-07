@@ -23,20 +23,18 @@ class StartServer extends DefaultTask {
 		final extension = project.extensions.getByType(PostgresqlExtension.class)
 		final EnvironmentConfig environment = extension.environment[environmentGroup]
 
-		final jdbcUrl = runServer(environment)
+		runServer(environment)
 
 		final tasks = project.tasks
 		                     .withType(JavaForkOptions.class)
 		                     .findAll { ((Task) it).dependsOn.contains(PostgresqlEmbeddedPlugin.TASK_START) }
 
 		tasks.each { task ->
-			logger.debug('processing task: {}', task)
-			task.environment(environment.environmentNames.host, environment.host)
-			task.environment(environment.environmentNames.port, environment.port)
-			task.environment(environment.environmentNames.dbName, environment.dbName)
-			task.environment(environment.environmentNames.user, environment.user)
-			task.environment(environment.environmentNames.password, environment.password)
-			task.environment(environment.environmentNames.jdbc, jdbcUrl)
+			logger.info('processing task: {}', task)
+			['host', 'port', 'dbName', 'user', 'password', 'jdbc'].each { paramName ->
+				task.systemProperty(environment.environmentNames[paramName], environment[paramName])
+				task.environment(environment.environmentNames[paramName], environment[paramName])
+			}
 		}
 	}
 
@@ -44,7 +42,7 @@ class StartServer extends DefaultTask {
 	 * @return {@link EmbeddedPostgres#start(...)}
 	 */
 	@SuppressWarnings("GroovyAssignabilityCheck")
-	private String runServer(EnvironmentConfig environment) {
+	private static void runServer(EnvironmentConfig environment) {
 		PostgresqlEmbeddedPlugin.postgresServer = new EmbeddedPostgres(environment.version)
 		final postgresServer = PostgresqlEmbeddedPlugin.postgresServer
 
@@ -55,13 +53,17 @@ class StartServer extends DefaultTask {
 			environment.addParams = new ArrayList<>()
 		}
 
-		return postgresServer.start(environment.runtimeConfig,
-		                            environment.host,
-		                            environment.port,
-		                            environment.dbName,
-		                            environment.user,
-		                            environment.password,
-		                            environment.addParams)
+		final jdbcUrl = postgresServer.start(environment.runtimeConfig,
+		                                     environment.host,
+		                                     environment.port,
+		                                     environment.dbName,
+		                                     environment.user,
+		                                     environment.password,
+		                                     environment.addParams)
+
+		if (!(environment.jdbc?.trim())) {
+			environment.jdbc = jdbcUrl
+		}
 	}
 
 }

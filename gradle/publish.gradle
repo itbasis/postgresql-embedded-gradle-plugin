@@ -1,0 +1,84 @@
+apply plugin: 'idea'
+apply plugin: 'java-gradle-plugin'
+apply plugin: 'com.gradle.plugin-publish'
+apply plugin: 'com.bmuschko.nexus'
+apply plugin: 'io.codearte.nexus-staging'
+
+uploadArchives.dependsOn check
+closeRepository.dependsOn uploadArchives
+closeRepository.shouldRunAfter publishPlugins
+publishPlugins.dependsOn 'check', 'signArchives'
+task publish(dependsOn: [publishPlugins, closeAndReleaseRepository]) {}
+
+idea {
+	project {
+		languageLevel = javaVersion
+	}
+	module {
+		downloadJavadoc = false
+		downloadSources = false
+	}
+}
+
+nexusStaging {
+	packageGroup = 'ru.itbasis'
+}
+
+modifyPom {
+	project {
+		description = project.description
+		url = project.url
+		name = project.name
+		licenses {
+			license {
+				name = 'MIT License'
+				url = project.url + '/blob/master/LICENSE'
+				distribution = 'repo'
+			}
+		}
+		issueManagement {
+			system = 'GitHub Issues'
+			url = project.url + '/issues'
+		}
+		scm {
+			connection = project.scmUrl
+			developerConnection = project.scmUrl
+			tag = project.version
+			url = project.url
+		}
+		ciManagement {
+			system = 'Travis'
+			url = project.ciUrl
+		}
+		developers {
+			developer {
+				id = 'owner'
+				name = 'Victor Alenkov'
+				email = 'Victor@Alenkov.name'
+				timezone = 'UTC+3'
+			}
+		}
+	}
+}
+
+pluginBundle {
+	website = project.url
+	vcsUrl = project.url
+	description = project.description
+
+	mavenCoordinates {
+		groupId = project.group
+		artifactId = project.name
+		version = project.version
+		url = project.url
+	}
+
+	plugins {
+		javaModuleGradlePlugin {
+			id = project.group + '.' + project.name
+			displayName = project.description
+			tags = ['java', 'postgresql', 'qatools', 'embedded']
+			version = project.version
+		}
+	}
+}

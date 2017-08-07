@@ -1,10 +1,21 @@
 package ru.itbasis.gradle.plugins.postgresql
 
+import org.apache.commons.io.FileUtils
+import org.apache.commons.lang3.StringUtils
 import org.gradle.internal.impldep.com.google.common.io.Files
 import org.gradle.testkit.runner.GradleRunner
-import org.junit.*
+import org.hamcrest.core.IsNull
+import org.junit.Before
+import org.junit.Rule
+import org.junit.Test
 import org.junit.rules.TemporaryFolder
 import ru.yandex.qatools.embed.postgresql.distribution.Version
+
+import static org.hamcrest.CoreMatchers.not
+import static org.hamcrest.core.Is.is
+import static org.hamcrest.core.StringContains.containsString
+import static org.hamcrest.text.StringContainsInOrder.stringContainsInOrder
+import static org.junit.Assert.assertThat
 
 class PostgresqlEmbeddedPluginTest {
 	@Rule
@@ -20,9 +31,9 @@ class PostgresqlEmbeddedPluginTest {
 		                           .withPluginClasspath()
 	}
 
-	private void initProjectStructure(String sourceBuildFileName, String javaTestClassName) {
+	private void initProjectStructure(String sourceBuildFileName, String... testSourcePaths) {
 		// build.gradle
-		Files.copy(new File(this.class.classLoader.getResource(sourceBuildFileName + '.gradle').toURI()),
+		Files.copy(new File(this.class.classLoader.getResource(sourceBuildFileName + '.gradle').file),
 		           testProjectDir.newFile('build.gradle'))
 		// main sources
 		new File(testProjectDir.root, 'src/main/java').mkdirs()
@@ -30,84 +41,107 @@ class PostgresqlEmbeddedPluginTest {
 		// test sources
 		final dirTestJava = new File(testProjectDir.root, 'src/test/java/test')
 		dirTestJava.mkdirs()
-		Files.copy(new File(this.class.classLoader.getResource(javaTestClassName + '.java').toURI()),
-		           new File(dirTestJava, 'TestClass.java'))
+
+		testSourcePaths.each { testSourcePath ->
+			final resource = this.class.classLoader.getResource(testSourcePath)
+			assertThat('get test source path: ' + testSourcePath, resource, IsNull.notNullValue())
+
+			final testResource = new File(resource.file)
+			assertThat(testResource.exists(), is(true))
+			if (testResource.file) {
+				FileUtils.copyFileToDirectory(testResource, dirTestJava)
+			} else {
+				FileUtils.copyDirectory(testResource, testProjectDir.root)
+			}
+		}
+	}
+
+	private static void assertOrderTasks(String output, String... tasks = ['test']) throws Exception {
+		assertThat(StringUtils.countMatches(output, ':postgresqlServerStart'), is(1))
+		assertThat(StringUtils.countMatches(output, ':postgresqlServerStop'), is(1))
+
+		tasks.each { taskName ->
+			assertThat(output, stringContainsInOrder([':postgresqlServerStart', taskName, ':postgresqlServerStop']))
+		}
 	}
 
 	@Test
 	void blank() throws Exception {
-		initProjectStructure('blank', 'TestClass')
+		initProjectStructure('blank', 'TestClass.java')
 		final result = gradleRunner.withArguments('tasks')
 		                           .build()
-		Assert.assertTrue(result.output
-		                        .contains('EmbeddedPostgreSQL tasks\n'
-			                                  + '------------------------\n'
-			                                  + 'postgresqlServerStart\n'
-			                                  + 'postgresqlServerStop\n'
-		))
+		assertThat(result.output, stringContainsInOrder(['EmbeddedPostgreSQL tasks',
+		                                                 'postgresqlServerStart',
+		                                                 'postgresqlServerStop']))
 	}
 
 	@Test
 	void fail() throws Exception {
-		initProjectStructure('blank', 'TestClass')
+		initProjectStructure('blank', 'TestClass.java')
 		final result = gradleRunner.withArguments('test')
 		                           .buildAndFail()
-		Assert.assertTrue(result.output.contains('testEnvironment FAILED'))
+		assertThat(result.output, containsString('testEnvironment FAILED'))
 	}
 
 	@Test
 	void notSetEnvironment() throws Exception {
-		initProjectStructure('blank', 'TestClassNotFound')
+		initProjectStructure('blank', 'TestClassNotFound.java')
 		final result = gradleRunner.withArguments('test')
 		                           .build()
-		Assert.assertFalse(result.output.contains(':postgresqlServerStart'))
+		assertThat(result.output, not(containsString(':postgresqlServerStart')))
 	}
 
-	/** TODO https://github.com/yandex-qatools/postgresql-embedded/issues/90 */
 	@Test
-	@Ignore
 	void minimal() throws Exception {
-		initProjectStructure('minimal', 'TestClass')
+		initProjectStructure('minimal', 'TestClass.java')
 		final result = gradleRunner.withArguments('test')
 		                           .build()
-		Assert.assertTrue(result.output.contains(Version.Main.PRODUCTION.asInDownloadPath()))
+		assertThat(result.output, containsString(Version.Main.PRODUCTION.asInDownloadPath()))
+		assertOrderTasks(result.output)
 	}
 
-	/** TODO https://github.com/yandex-qatools/postgresql-embedded/issues/90 */
 	@Test
-	@Ignore
 	void version_9_5() throws Exception {
-		initProjectStructure('version-9.5', 'TestClass')
+		initProjectStructure('version-9.5', 'TestClass.java')
 		final result = gradleRunner.withArguments('test')
 		                           .build()
-		Assert.assertTrue(result.output.contains(Version.Main.V9_5.asInDownloadPath()))
+		assertThat(result.output, containsString(Version.Main.V9_5.asInDownloadPath()))
+		assertOrderTasks(result.output)
 	}
 
-	/** TODO https://github.com/yandex-qatools/postgresql-embedded/issues/90 */
 	@Test
-	@Ignore
 	void version_9_6() throws Exception {
-		initProjectStructure('version-9.6', 'TestClass')
+		initProjectStructure('version-9.6', 'TestClass.java')
 		final result = gradleRunner.withArguments('test')
 		                           .build()
-		Assert.assertTrue(result.output.contains(Version.Main.V9_6.asInDownloadPath()))
+		assertThat(result.output, containsString(Version.Main.V9_6.asInDownloadPath()))
+		assertOrderTasks(result.output)
 	}
 
-	/** TODO https://github.com/yandex-qatools/postgresql-embedded/issues/90 */
 	@Test
-	@Ignore
 	void customEnvironmentNames() throws Exception {
-		initProjectStructure('custom-environment-names', 'TestClassCustomEnvironmentNames')
+		initProjectStructure('custom-environment-names', 'TestClassCustomEnvironmentNames.java')
 		final result = gradleRunner.withArguments('test')
 		                           .build()
-		Assert.assertTrue(result.output.contains(Version.Main.PRODUCTION.asInDownloadPath()))
+		assertThat(result.output, containsString(Version.Main.PRODUCTION.asInDownloadPath()))
+		assertOrderTasks(result.output)
 	}
 
 	@Test
 	void customEnvironmentPartial() throws Exception {
-		initProjectStructure('environment-custom-partial', 'TestClass')
+		initProjectStructure('environment-custom-partial', 'TestClass.java')
 		final result = gradleRunner.withArguments('test')
 		                           .build()
-		Assert.assertTrue(result.output.contains(Version.Main.V9_5.asInDownloadPath()))
+		assertThat(result.output, containsString(Version.Main.V9_5.asInDownloadPath()))
+		assertOrderTasks(result.output)
+	}
+
+	@Test
+	void springBootRun() throws Exception {
+		initProjectStructure('spring-boot/build', 'spring-boot', 'TestClass.java')
+		final result = gradleRunner.withArguments('test', 'bootRun')
+		                           .build()
+		assertThat(result.output, containsString(Version.Main.V9_5.asInDownloadPath()))
+		assertOrderTasks(result.output, 'test', 'bootRun')
 	}
 }

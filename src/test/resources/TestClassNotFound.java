@@ -5,7 +5,7 @@ import org.junit.Test;
 
 import java.util.Map;
 
-public class TestClass {
+public class TestClassNotFound {
 	@Test
 	public void testEnvironment() throws Exception {
 		final Map<String, String> env = System.getenv();

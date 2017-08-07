@@ -13,6 +13,7 @@ class EnvironmentConfig {
 	public String dbName = DEFAULT_DB_NAME
 	public String user = DEFAULT_USER
 	public String password = DEFAULT_PASSWORD
+	public String jdbc = null
 	public List<String> addParams = new ArrayList<>()
 
 	public IRuntimeConfig runtimeConfig = defaultRuntimeConfig()

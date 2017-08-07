@@ -2,7 +2,10 @@
 
 .gradle/
 build/
+.gradletasknamecache
 
 .idea/*
 !.idea/vcs.xml
+!.idea/gradle.xml
+!.idea/compiler.xml
 !.idea/runConfigurations/

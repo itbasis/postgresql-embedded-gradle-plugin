@@ -8,7 +8,7 @@ import java.sql.DriverManager;
 import java.sql.Statement;
 import java.util.Map;
 
-public class TestClass {
+public class TestClassCustomEnvironmentNames {
 	@Test
 	public void testEnvironment() throws Exception {
 		final Map<String, String> env = System.getenv();
