@@ -24,6 +24,8 @@ class PostgresqlEmbeddedPluginTest {
 
 	@Before
 	void setUp() throws Exception {
+		System.setProperty("jna.debug_load", "true")
+		System.setProperty("jna.nosys", "true")
 		gradleRunner = GradleRunner.create()
 		                           .withDebug(true)
 		                           .withProjectDir(testProjectDir.root)
